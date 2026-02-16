@@ -3,7 +3,7 @@ import Layout from '../../layouts/Layout.astro';
 const base = import.meta.env.BASE_URL;
 ---
 
-<Layout title="AlphaZero -- Neural Network Architecture" description="ResNet architecture for AlphaZero: StartBlock, ResBlocks, policy and value heads, board encoding, loss functions, WDL variant, and gradient flow through residual connections.">
+<Layout title="AlphaZero -- Neural Network Architecture" description="Neural network architecture used across AlphaZeroLight runs: benchmark, baseline champion, and max-strength Connect Four configurations.">
   <div style="max-width: 1100px; margin: 0 auto; padding: 3rem 1.5rem;">
 
     <div style="margin-bottom: 2.5rem;">
@@ -20,11 +20,80 @@ const base = import.meta.env.BASE_URL;
       <h1 class="gradient-text" style="font-size: 2.6rem; font-weight: 800; margin-bottom: 1rem;">
         Neural Network Architecture
       </h1>
-      <p style="color: var(--text-secondary); font-size: 1.15rem; max-width: 750px; line-height: 1.7;">
-        A ResNet backbone shared between a policy head and a value head, board encoded as 3
-        channels, trained with cross-entropy + MSE loss on self-play data.
+      <p style="color: var(--text-secondary); font-size: 1.15rem; max-width: 800px; line-height: 1.7;">
+        A shared ResNet backbone with dual policy/value heads. This page maps the architecture
+        across all training regimes in this project: fast benchmark runs, the baseline tournament
+        champion (`model_120`), and the week-scale max-strength configuration.
       </p>
     </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 1rem; margin-bottom: 2.5rem;">
+      <div class="stat-card" style="text-align: center;">
+        <div style="font-size: 1.8rem; font-weight: 700; color: var(--accent-blue);">10 / 128</div>
+        <div style="color: var(--text-secondary); font-size: 0.85rem;">Baseline champion net</div>
+      </div>
+      <div class="stat-card" style="text-align: center;">
+        <div style="font-size: 1.8rem; font-weight: 700; color: var(--accent-green);">20 / 256</div>
+        <div style="color: var(--text-secondary); font-size: 0.85rem;">Max-strength net</div>
+      </div>
+      <div class="stat-card" style="text-align: center;">
+        <div style="font-size: 1.8rem; font-weight: 700; color: var(--accent-purple);">~1.2M -> ~5M</div>
+        <div style="color: var(--text-secondary); font-size: 0.85rem;">Parameter scale-up</div>
+      </div>
+      <div class="stat-card" style="text-align: center;">
+        <div style="font-size: 1.8rem; font-weight: 700; color: var(--accent-orange);">3</div>
+        <div style="color: var(--text-secondary); font-size: 0.85rem;">Input channels</div>
+      </div>
+    </div>
+
+    <!-- ===================== SECTION 0: REGIME MAP ===================== -->
+    <section style="margin-bottom: 3rem;">
+      <h2 style="font-size: 1.9rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1.2rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border);">
+        0. Architecture Regimes In This Project
+      </h2>
+
+      <div style="overflow-x: auto; margin-bottom: 1rem;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 0.88rem;">
+          <thead>
+            <tr style="background: var(--bg-secondary);">
+              <th style="padding: 0.65rem 0.9rem; border: 1px solid var(--border);">Regime</th>
+              <th style="padding: 0.65rem 0.9rem; border: 1px solid var(--border);">ResBlocks</th>
+              <th style="padding: 0.65rem 0.9rem; border: 1px solid var(--border);">Hidden</th>
+              <th style="padding: 0.65rem 0.9rem; border: 1px solid var(--border);">Approx Params</th>
+              <th style="padding: 0.65rem 0.9rem; border: 1px solid var(--border);">Use Case</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="padding: 0.6rem 0.9rem; border: 1px solid var(--border);">Fast benchmark</td>
+              <td style="padding: 0.6rem 0.9rem; border: 1px solid var(--border);">4</td>
+              <td style="padding: 0.6rem 0.9rem; border: 1px solid var(--border);">64</td>
+              <td style="padding: 0.6rem 0.9rem; border: 1px solid var(--border);">Lightweight</td>
+              <td style="padding: 0.6rem 0.9rem; border: 1px solid var(--border);">Quick validation and demos</td>
+            </tr>
+            <tr style="background: var(--bg-secondary);">
+              <td style="padding: 0.6rem 0.9rem; border: 1px solid var(--border);">Baseline champion</td>
+              <td style="padding: 0.6rem 0.9rem; border: 1px solid var(--border);">10</td>
+              <td style="padding: 0.6rem 0.9rem; border: 1px solid var(--border);">128</td>
+              <td style="padding: 0.6rem 0.9rem; border: 1px solid var(--border);">~1.2M</td>
+              <td style="padding: 0.6rem 0.9rem; border: 1px solid var(--border);">Tournament-winning profile (`model_120`)</td>
+            </tr>
+            <tr>
+              <td style="padding: 0.6rem 0.9rem; border: 1px solid var(--border);">Max-strength</td>
+              <td style="padding: 0.6rem 0.9rem; border: 1px solid var(--border);">20</td>
+              <td style="padding: 0.6rem 0.9rem; border: 1px solid var(--border);">256</td>
+              <td style="padding: 0.6rem 0.9rem; border: 1px solid var(--border);">~5M</td>
+              <td style="padding: 0.6rem 0.9rem; border: 1px solid var(--border);">Week-scale, hard-to-beat play</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-info">
+        <strong>Important:</strong> the PyTorch snippet below uses a compact default constructor for
+        readability. Production training uses larger values from configuration files.
+      </div>
+    </section>
 
     <!-- ===================== SECTION 1: ARCHITECTURE OVERVIEW ===================== -->
     <section style="margin-bottom: 3rem;">
@@ -46,7 +115,7 @@ const base = import.meta.env.BASE_URL;
                       |
          +------------+------------+
          |            |            |
-         ?            ?            ?
+         |            |            |
   +-------------+ +-------------+ +-------------+
   |  ResBlock 1 | |  ResBlock 2 | |  ResBlock 3 | ...
   | +---------+ | |             | |             | (N blocks)
@@ -62,7 +131,7 @@ const base = import.meta.env.BASE_URL;
                       |
          +------------+------------+
          |                         |
-         ?                         ?
+         |                         |
   +------------------+    +------------------+
   |  POLICY HEAD     |    |  VALUE HEAD      |
   |  Conv2d(64->32)   |    |  Conv2d(64->3)    |
@@ -72,23 +141,23 @@ const base = import.meta.env.BASE_URL;
   |  (raw logits)    |    |  Tanh            |
   +------------------+    +------------------+
          |                         |
-         ?                         ?
+         |                         |
   pi(s): action logits         V(s)  in  [-1, +1]
   (apply softmax externally)  (win probability)
 </code></pre>
 
       <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-top: 1.5rem;">
         <div class="stat-card" style="text-align: center;">
-          <div style="font-size: 1.8rem; font-weight: 700; color: var(--accent-purple);">4</div>
-          <div style="color: var(--text-secondary); font-size: 0.85rem;">ResBlocks (base config)</div>
+          <div style="font-size: 1.8rem; font-weight: 700; color: var(--accent-purple);">10</div>
+          <div style="color: var(--text-secondary); font-size: 0.85rem;">ResBlocks (baseline champion)</div>
         </div>
         <div class="stat-card" style="text-align: center;">
-          <div style="font-size: 1.8rem; font-weight: 700; color: var(--accent-blue);">64</div>
-          <div style="color: var(--text-secondary); font-size: 0.85rem;">Hidden channels (base)</div>
+          <div style="font-size: 1.8rem; font-weight: 700; color: var(--accent-blue);">128</div>
+          <div style="color: var(--text-secondary); font-size: 0.85rem;">Hidden channels (baseline champion)</div>
         </div>
         <div class="stat-card" style="text-align: center;">
-          <div style="font-size: 1.8rem; font-weight: 700; color: var(--accent-green);">20 / 128</div>
-          <div style="color: var(--text-secondary); font-size: 0.85rem;">Heavy config (Gomoku)</div>
+          <div style="font-size: 1.8rem; font-weight: 700; color: var(--accent-green);">20 / 256</div>
+          <div style="color: var(--text-secondary); font-size: 0.85rem;">Max-strength Connect Four</div>
         </div>
         <div class="stat-card" style="text-align: center;">
           <div style="font-size: 1.8rem; font-weight: 700; color: var(--accent-orange);">3</div>
@@ -248,15 +317,15 @@ class ResNet(nn.Module):
       </div>
 
       <div class="formula-box" style="margin: 1rem 0 1.5rem;">
-        L(theta) = CrossEntropy(pi, pi?) + MSE(z, ?)
+        L(theta) = CrossEntropy(pi_target, pi_theta) + MSE(z, v_theta)
         <div style="margin-top: 0.8rem; display: grid; grid-template-columns: auto 1fr; gap: 0.3rem 1rem; font-size: 0.9rem;">
-          <span style="color: var(--accent-cyan);">pi</span>
+          <span style="color: var(--accent-cyan);">pi_target</span>
           <span>MCTS visit count distribution (training target, soft labels)</span>
-          <span style="color: var(--accent-cyan);">pi?</span>
+          <span style="color: var(--accent-cyan);">pi_theta</span>
           <span>Network policy output (softmax of logits)</span>
           <span style="color: var(--accent-cyan);">z</span>
           <span>Game outcome from self-play: +1 (win), 0 (draw), -1 (loss)</span>
-          <span style="color: var(--accent-cyan);">?</span>
+          <span style="color: var(--accent-cyan);">v_theta</span>
           <span>Network value output (tanh scalar)</span>
         </div>
       </div>
@@ -392,24 +461,24 @@ Scalar value = P(W) - P(L)</code></pre>
           <li><strong>Faster training convergence:</strong> Good gradient flow from the start of training.</li>
         </ul>
         <p>
-          The heavier configuration used for Gomoku (20 ResBlocks, 128 channels) would be
-          completely untrainable as a plain deep network -- residual connections are essential
-          at that depth.
+          The heavier Connect Four maximum-strength configuration (20 ResBlocks, 256 channels)
+          would be difficult to optimize as a plain deep stack. Residual pathways are essential
+          for making this depth practical.
         </p>
       </div>
 
       <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; margin-top: 1.5rem;">
         <div class="stat-card" style="text-align: center;">
           <div style="font-size: 1.4rem; font-weight: 700; color: var(--accent-blue);">4 blocks / 64ch</div>
-          <div style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.3rem;">Connect Four base config</div>
+          <div style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.3rem;">Fast benchmark profile</div>
         </div>
         <div class="stat-card" style="text-align: center;">
-          <div style="font-size: 1.4rem; font-weight: 700; color: var(--accent-green);">9 blocks / 128ch</div>
-          <div style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.3rem;">Connect Four heavy config</div>
+          <div style="font-size: 1.4rem; font-weight: 700; color: var(--accent-green);">10 blocks / 128ch</div>
+          <div style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.3rem;">Baseline champion profile</div>
         </div>
         <div class="stat-card" style="text-align: center;">
-          <div style="font-size: 1.4rem; font-weight: 700; color: var(--accent-purple);">20 blocks / 128ch</div>
-          <div style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.3rem;">Gomoku config</div>
+          <div style="font-size: 1.4rem; font-weight: 700; color: var(--accent-purple);">20 blocks / 256ch</div>
+          <div style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.3rem;">Week-scale max-strength profile</div>
         </div>
       </div>
     </section>

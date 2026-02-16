@@ -3,7 +3,7 @@ import Layout from '../../layouts/Layout.astro';
 const base = import.meta.env.BASE_URL;
 ---
 
-<Layout title="AlphaZero -- Self-Play & Training" description="AlphaZero self-play training loop: learn() method, temperature scheduling, replay buffer, loss curves, evaluation protocol, and expert iteration insight.">
+<Layout title="AlphaZero -- Self-Play & Training" description="AlphaZero training pipeline for Connect Four: baseline benchmark, long-run production training, schedules, loss dynamics, and expert-iteration mechanics.">
   <div style="max-width: 1100px; margin: 0 auto; padding: 3rem 1.5rem;">
 
     <div style="margin-bottom: 2.5rem;">
@@ -21,30 +21,80 @@ const base = import.meta.env.BASE_URL;
         Self-Play &amp; Training
       </h1>
       <p style="color: var(--text-secondary); font-size: 1.15rem; max-width: 750px; line-height: 1.7;">
-        The complete AlphaZero training loop: self-play data generation, temperature scheduling,
-        replay buffer management, and the virtuous cycle that creates superhuman play.
+        The complete AlphaZero training loop, from fast benchmark runs to week-scale production
+        training: self-play generation, schedules, replay management, and the expert-iteration
+        cycle that drives strong Connect Four play.
       </p>
     </div>
 
-    <!-- Key training results -->
+    <!-- Key training snapshots -->
     <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2.5rem;">
       <div class="stat-card" style="text-align: center;">
-        <div style="font-size: 1.8rem; font-weight: 700; color: var(--accent-blue);">0 -> 82.5%</div>
-        <div style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.3rem;">Win rate vs random (50 iter)</div>
+        <div style="font-size: 1.8rem; font-weight: 700; color: var(--accent-blue);">82.5%</div>
+        <div style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.3rem;">Fast benchmark (50 iterations)</div>
       </div>
       <div class="stat-card" style="text-align: center;">
-        <div style="font-size: 1.8rem; font-weight: 700; color: var(--accent-green);">2.15 -> 0.25</div>
-        <div style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.3rem;">Loss (iter 0 -> iter 49)</div>
+        <div style="font-size: 1.8rem; font-weight: 700; color: var(--accent-green);">30W-5D-15L</div>
+        <div style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.3rem;">`model_120` tournament champion</div>
       </div>
       <div class="stat-card" style="text-align: center;">
-        <div style="font-size: 1.8rem; font-weight: 700; color: var(--accent-orange);">16 min</div>
-        <div style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.3rem;">Total training time</div>
+        <div style="font-size: 1.8rem; font-weight: 700; color: var(--accent-orange);">150-300 iter</div>
+        <div style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.3rem;">Week-scale max-strength plan</div>
       </div>
       <div class="stat-card" style="text-align: center;">
-        <div style="font-size: 1.8rem; font-weight: 700; color: var(--accent-purple);">400 MB</div>
-        <div style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.3rem;">VRAM used</div>
+        <div style="font-size: 1.8rem; font-weight: 700; color: var(--accent-purple);">400 search</div>
+        <div style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.3rem;">MCTS depth in strongest run</div>
       </div>
     </div>
+
+    <!-- ===================== SECTION 0: TRAINING REGIMES ===================== -->
+    <section style="margin-bottom: 3rem;">
+      <h2 style="font-size: 1.9rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1.2rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border);">
+        0. Training Regimes Used In This Project
+      </h2>
+
+      <div style="overflow-x: auto; margin-bottom: 1rem;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 0.88rem;">
+          <thead>
+            <tr style="background: var(--bg-secondary);">
+              <th style="padding: 0.65rem 0.9rem; border: 1px solid var(--border);">Regime</th>
+              <th style="padding: 0.65rem 0.9rem; border: 1px solid var(--border);">Model</th>
+              <th style="padding: 0.65rem 0.9rem; border: 1px solid var(--border);">Searches</th>
+              <th style="padding: 0.65rem 0.9rem; border: 1px solid var(--border);">Iterations</th>
+              <th style="padding: 0.65rem 0.9rem; border: 1px solid var(--border);">Outcome</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="padding: 0.6rem 0.9rem; border: 1px solid var(--border);">Fast benchmark</td>
+              <td style="padding: 0.6rem 0.9rem; border: 1px solid var(--border);">ResNet-4 / 64</td>
+              <td style="padding: 0.6rem 0.9rem; border: 1px solid var(--border);">50-100</td>
+              <td style="padding: 0.6rem 0.9rem; border: 1px solid var(--border);">50</td>
+              <td style="padding: 0.6rem 0.9rem; border: 1px solid var(--border);">82.5% vs random in minutes</td>
+            </tr>
+            <tr style="background: var(--bg-secondary);">
+              <td style="padding: 0.6rem 0.9rem; border: 1px solid var(--border);">Baseline long run</td>
+              <td style="padding: 0.6rem 0.9rem; border: 1px solid var(--border);">ResNet-10 / 128</td>
+              <td style="padding: 0.6rem 0.9rem; border: 1px solid var(--border);">100</td>
+              <td style="padding: 0.6rem 0.9rem; border: 1px solid var(--border);">127</td>
+              <td style="padding: 0.6rem 0.9rem; border: 1px solid var(--border);">`model_120` tournament champion</td>
+            </tr>
+            <tr>
+              <td style="padding: 0.6rem 0.9rem; border: 1px solid var(--border);">Max-strength run</td>
+              <td style="padding: 0.6rem 0.9rem; border: 1px solid var(--border);">ResNet-20 / 256</td>
+              <td style="padding: 0.6rem 0.9rem; border: 1px solid var(--border);">400</td>
+              <td style="padding: 0.6rem 0.9rem; border: 1px solid var(--border);">150-300 target</td>
+              <td style="padding: 0.6rem 0.9rem; border: 1px solid var(--border);">Week-scale high-difficulty play</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-info">
+        <strong>Reading tip:</strong> The iteration table below is from the 50-iteration benchmark.
+        It is still useful to understand dynamics, but it is not the final ceiling of the project.
+      </div>
+    </section>
 
     <!-- ===================== SECTION 1: FULL TRAINING LOOP ===================== -->
     <section style="margin-bottom: 3rem;">
@@ -205,10 +255,10 @@ const base = import.meta.env.BASE_URL;
 </code></pre>
     </section>
 
-    <!-- ===================== SECTION 4: TRAINING RESULTS ===================== -->
+    <!-- ===================== SECTION 4: BASELINE BENCHMARK ===================== -->
     <section style="margin-bottom: 3rem;">
       <h2 style="font-size: 1.9rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1.2rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border);">
-        4. Training Results -- Iteration by Iteration
+        4. Baseline 50-Iteration Benchmark (Iteration by Iteration)
       </h2>
 
       <div style="overflow-x: auto; margin-bottom: 1.5rem;">
@@ -295,7 +345,7 @@ const base = import.meta.env.BASE_URL;
     <!-- ===================== SECTION 5: RTX 5080 PERFORMANCE ===================== -->
     <section style="margin-bottom: 3rem;">
       <h2 style="font-size: 1.9rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1.2rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border);">
-        5. Training on RTX 5080
+        5. Runtime Characteristics on RTX 5080
       </h2>
 
       <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
@@ -308,19 +358,19 @@ const base = import.meta.env.BASE_URL;
           <div style="color: var(--text-secondary); font-size: 0.85rem;">Total VRAM</div>
         </div>
         <div class="stat-card" style="text-align: center;">
-          <div style="font-size: 1.6rem; font-weight: 700; color: var(--accent-orange);">~400 MB</div>
-          <div style="color: var(--text-secondary); font-size: 0.85rem;">VRAM in use</div>
+          <div style="font-size: 1.6rem; font-weight: 700; color: var(--accent-orange);">~400 MB to 8-10 GB</div>
+          <div style="color: var(--text-secondary); font-size: 0.85rem;">VRAM range (benchmark -> max run)</div>
         </div>
         <div class="stat-card" style="text-align: center;">
-          <div style="font-size: 1.6rem; font-weight: 700; color: var(--accent-purple);">36%</div>
-          <div style="color: var(--text-secondary); font-size: 0.85rem;">GPU utilisation</div>
+          <div style="font-size: 1.6rem; font-weight: 700; color: var(--accent-purple);">16 min -> 7-10 days</div>
+          <div style="color: var(--text-secondary); font-size: 0.85rem;">Fast demo vs max-strength campaign</div>
         </div>
       </div>
 
       <div class="prose">
         <p>
-          GPU utilisation at 36% indicates the bottleneck is not the GPU but the CPU-bound MCTS
-          simulation. Each simulation in MCTS requires:
+          The major bottleneck is still CPU-side tree traversal, not raw GPU math throughput.
+          Each MCTS simulation requires:
         </p>
         <ol>
           <li>A selection pass through the tree (pure Python traversal)</li>
@@ -328,14 +378,13 @@ const base = import.meta.env.BASE_URL;
           <li>A backpropagation pass (pure Python)</li>
         </ol>
         <p>
-          Steps 1 and 3 are Python code running on CPU. With 50 simulations per move and ~20
-          moves per game, that's 1,000 Python tree traversals per game. Python overhead is
-          significant -- a C++ MCTS implementation would likely achieve 70-80% GPU utilisation.
+          At 50 searches per move, this overhead is manageable and gives quick feedback loops.
+          At 400 searches per move (max-strength), it dominates wall-clock time and explains why
+          full training shifts from minutes to days.
         </p>
         <p>
-          Despite this, 16 minutes to reach 82.5% win rate demonstrates that AlphaZero is
-          impressively sample-efficient for Connect Four. The small board (6x7) and limited
-          action space (7) allow rapid convergence compared to Go (19x19) or Chess.
+          This repo includes both Python and C++ MCTS implementations, plus monitor scripts and
+          process controls, specifically to make long uninterrupted runs practical.
         </p>
       </div>
     </section>
