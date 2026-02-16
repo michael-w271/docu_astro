@@ -6,7 +6,7 @@ import mdx from '@astrojs/mdx';
 // https://astro.build/config
 export default defineConfig({
   site: 'https://michael-w271.github.io',
-  base: '/docu_astro',
+  base: '/ml-portfolio',
   vite: {
     plugins: [tailwindcss()]
   },
