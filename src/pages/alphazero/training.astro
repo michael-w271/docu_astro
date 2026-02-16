@@ -38,7 +38,7 @@ const base = import.meta.env.BASE_URL;
         <div style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.3rem;">`model_120` tournament champion</div>
       </div>
       <div class="stat-card" style="text-align: center;">
-        <div style="font-size: 1.8rem; font-weight: 700; color: var(--accent-orange);">150-300 iter</div>
+        <div style="font-size: 1.8rem; font-weight: 700; color: var(--accent-orange);">150-350 iter</div>
         <div style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.3rem;">Week-scale max-strength plan</div>
       </div>
       <div class="stat-card" style="text-align: center;">
@@ -83,7 +83,7 @@ const base = import.meta.env.BASE_URL;
               <td style="padding: 0.6rem 0.9rem; border: 1px solid var(--border);">Max-strength run</td>
               <td style="padding: 0.6rem 0.9rem; border: 1px solid var(--border);">ResNet-20 / 256</td>
               <td style="padding: 0.6rem 0.9rem; border: 1px solid var(--border);">400</td>
-              <td style="padding: 0.6rem 0.9rem; border: 1px solid var(--border);">150-300 target</td>
+              <td style="padding: 0.6rem 0.9rem; border: 1px solid var(--border);">150-350 target</td>
               <td style="padding: 0.6rem 0.9rem; border: 1px solid var(--border);">Week-scale high-difficulty play</td>
             </tr>
           </tbody>
@@ -93,6 +93,45 @@ const base = import.meta.env.BASE_URL;
       <div class="callout callout-info">
         <strong>Reading tip:</strong> The iteration table below is from the 50-iteration benchmark.
         It is still useful to understand dynamics, but it is not the final ceiling of the project.
+      </div>
+    </section>
+
+    <!-- ===================== SECTION 0.5: OPERATIONAL RUNBOOK ===================== -->
+    <section style="margin-bottom: 3rem;">
+      <h2 style="font-size: 1.9rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1.2rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border);">
+        0.5 Practical Runbook (What I Actually Ran)
+      </h2>
+
+      <div class="prose">
+        <p>
+          This project used an operational workflow for long training sessions: launcher scripts,
+          continuous monitoring, per-iteration checkpointing, and pause/resume controls.
+        </p>
+      </div>
+
+      <pre><code class="language-bash"># Setup
+git clone https://github.com/michael-w271/alphazerolight.git
+cd alphazerolight
+pip install -r requirements.txt
+pip install -e .
+
+# Start long training with monitors
+bash training/scripts/start_training.sh
+# Optional variant
+bash training/scripts/start_training_with_monitors.sh
+
+# Pause / resume without losing progress
+bash training/utils/pause_training.sh
+bash training/utils/resume_training.sh
+
+# Evaluate and select best checkpoints
+python tests/integration/model_tournament.py
+python play_connect4.py
+</code></pre>
+
+      <div class="callout callout-info">
+        <strong>Config source of truth:</strong> `src/alpha_zero_light/config_connect4.py`
+        controls iteration count, MCTS schedule, model size, opponent mix, and temperature schedule.
       </div>
     </section>
 

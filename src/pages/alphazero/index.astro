@@ -40,7 +40,7 @@ const repo = 'https://github.com/michael-w271/alphazerolight';
         <div style="color: var(--text-secondary); font-size: 0.88rem; margin-top: 0.25rem;">High-iteration checkpoint in head-to-head tooling</div>
       </div>
       <div class="stat-card" style="text-align: center;">
-        <div style="font-size: 2rem; font-weight: 800; color: var(--accent-orange);">150-300</div>
+        <div style="font-size: 2rem; font-weight: 800; color: var(--accent-orange);">150-350</div>
         <div style="color: var(--text-secondary); font-size: 0.88rem; margin-top: 0.25rem;">Iterations for max-strength configuration</div>
       </div>
       <div class="stat-card" style="text-align: center;">
@@ -92,7 +92,7 @@ const repo = 'https://github.com/michael-w271/alphazerolight';
           <ul style="color: var(--text-secondary); font-size: 0.9rem; padding-left: 1.2rem;">
             <li>ResNet-20, 256 hidden channels (~5M params)</li>
             <li>400 MCTS searches per move</li>
-            <li>150-300 iteration target (~7-10 days)</li>
+            <li>150-350 iteration target (~week-scale runtime)</li>
             <li>High-iteration checkpoints referenced up to `model_195`</li>
             <li>Human games became substantially harder to win</li>
           </ul>
@@ -102,6 +102,71 @@ const repo = 'https://github.com/michael-w271/alphazerolight';
       <div class="callout callout-success" style="margin-top: 1rem;">
         <strong>Interpretation:</strong> The early 50-iteration demo metrics (fast run) are useful as
         a sanity check, but the stronger gameplay came from the long high-search training campaign.
+      </div>
+    </section>
+
+    <section style="margin-bottom: 3rem;">
+      <h2 style="font-size: 1.9rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border);">
+        How I Ran And Trained It
+      </h2>
+
+      <div class="prose">
+        <p>
+          The training setup was built for long unattended runs: explicit launch scripts, live
+          monitors, checkpointing every iteration, and pause/resume utilities.
+        </p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; margin: 1rem 0 1.4rem;">
+        <div class="stat-card" style="border-left: 3px solid var(--accent-blue);">
+          <h3 style="margin-bottom: 0.45rem; color: var(--accent-blue);">1. Environment</h3>
+          <p style="color: var(--text-secondary); font-size: 0.9rem;">
+            Prepare Python env and verify CUDA on the RTX 5080 before starting long sessions.
+          </p>
+        </div>
+        <div class="stat-card" style="border-left: 3px solid var(--accent-green);">
+          <h3 style="margin-bottom: 0.45rem; color: var(--accent-green);">2. Launch</h3>
+          <p style="color: var(--text-secondary); font-size: 0.9rem;">
+            Start `train_connect4.py` via launcher scripts that also open training/evaluation monitors.
+          </p>
+        </div>
+        <div class="stat-card" style="border-left: 3px solid var(--accent-purple);">
+          <h3 style="margin-bottom: 0.45rem; color: var(--accent-purple);">3. Operate</h3>
+          <p style="color: var(--text-secondary); font-size: 0.9rem;">
+            Use pause/resume scripts, inspect logs, and keep checkpoints for rollback/comparison.
+          </p>
+        </div>
+        <div class="stat-card" style="border-left: 3px solid var(--accent-orange);">
+          <h3 style="margin-bottom: 0.45rem; color: var(--accent-orange);">4. Evaluate</h3>
+          <p style="color: var(--text-secondary); font-size: 0.9rem;">
+            Run tournaments and tactical checks across iterations, then promote best checkpoints.
+          </p>
+        </div>
+      </div>
+
+      <pre><code class="language-bash"># 1) Setup
+git clone https://github.com/michael-w271/alphazerolight.git
+cd alphazerolight
+pip install -r requirements.txt
+pip install -e .
+
+# 2) Launch training (with monitors)
+bash training/scripts/start_training.sh
+# or
+bash training/scripts/start_training_with_monitors.sh
+
+# 3) Operational controls
+bash training/utils/pause_training.sh
+bash training/utils/resume_training.sh
+
+# 4) Evaluate checkpoints / play
+python tests/integration/model_tournament.py
+python play_connect4.py
+</code></pre>
+
+      <div class="callout callout-info">
+        <strong>Where the settings live:</strong> `src/alpha_zero_light/config_connect4.py`
+        (iterations, MCTS schedule, model size, opponent mix, and temperature schedule).
       </div>
     </section>
 
