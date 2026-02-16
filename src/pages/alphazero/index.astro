@@ -14,12 +14,16 @@ const base = import.meta.env.BASE_URL;
         <span class="tag tag-purple">ResNet</span>
         <span class="tag">Self-Play</span>
       </div>
-      <h1 class="gradient-text" style="font-size: 2.8rem; font-weight: 800; margin-bottom: 1rem;">
-        AlphaZero -- Connect Four
+      <h1 style="font-size: 2.8rem; font-weight: 800; margin-bottom: 1rem;">
+        AlphaZero
+        <span class="gradient-text" style="display: block; font-size: 0.72em; margin-top: 0.2rem;">
+          Connect Four (4-in-a-row)
+        </span>
       </h1>
       <p style="color: var(--text-secondary); font-size: 1.2rem; max-width: 750px; line-height: 1.7;">
         Pure self-play reinforcement learning with no domain knowledge. A ResNet with dual policy
-        and value heads, guided by MCTS, learns Connect Four from scratch in 16 minutes.
+        and value heads, guided by MCTS, learns Connect Four from scratch in 16 minutes, with
+        monitor-driven training scripts and an interactive Connect4 Lab app for live analysis.
       </p>
     </div>
 
@@ -110,6 +114,12 @@ const base = import.meta.env.BASE_URL;
             <li>Trains in ~2 hours</li>
           </ul>
         </div>
+      </div>
+
+      <div class="callout callout-info">
+        <strong>Repository context:</strong> In addition to the core AlphaZero pipeline, the repo
+        ships with start/pause/resume training scripts, evaluation monitors, tournament and tactical
+        test suites, and a web UI for playing against checkpointed models.
       </div>
     </section>
 

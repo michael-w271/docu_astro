@@ -14,12 +14,16 @@ const base = import.meta.env.BASE_URL;
         <span class="tag tag-green">LibTorch 2.7</span>
         <span class="tag">SDL2</span>
       </div>
-      <h1 class="gradient-text" style="font-size: 2.8rem; font-weight: 800; margin-bottom: 1rem;">
+      <h1 style="font-size: 2.8rem; font-weight: 800; margin-bottom: 1rem;">
         Tetris DQN
+        <span class="gradient-text" style="display: block; font-size: 0.72em; margin-top: 0.2rem;">
+          22,645-Line Result
+        </span>
       </h1>
       <p style="color: var(--text-secondary); font-size: 1.2rem; max-width: 750px; line-height: 1.7;">
         A Deep Q-Network agent trained entirely from scratch in C++17 with LibTorch, achieving
-        22,645 cleared lines through careful reward shaping and afterstate evaluation.
+        22,645 cleared lines through careful reward shaping and afterstate evaluation, with live
+        gameplay, weight/activation visualizers, and experiment automation tooling.
       </p>
     </div>
 
@@ -60,6 +64,11 @@ const base = import.meta.env.BASE_URL;
           C++ distribution of PyTorch). The implementation includes a full Tetris engine, SDL2
           visualisation, a React dashboard for monitoring training metrics, and an experimental
           afterstate evaluation strategy that evaluates all possible placements at each step.
+        </p>
+        <p>
+          The repository also includes reproducible setup/config scripts, interactive runtime controls
+          (toggle rendering, frame-step inspection), and a LangGraph-based experiment loop for
+          structured hyperparameter trials and leaderboard-style result tracking.
         </p>
         <p>
           The key research question explored: <em>how much does reward shaping matter?</em>
