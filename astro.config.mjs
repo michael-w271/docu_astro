@@ -6,7 +6,8 @@ import mdx from '@astrojs/mdx';
 // https://astro.build/config
 export default defineConfig({
   site: 'https://michael-w271.github.io',
-  base: '/ml-portfolio',
+  // Keep trailing slash so string-concatenated links become /ml-portfolio/... .
+  base: '/ml-portfolio/',
   vite: {
     plugins: [tailwindcss()]
   },
